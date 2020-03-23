@@ -4,6 +4,7 @@
 # CopyRight (py) 2017年 陈超. All rights reserved by Chao.Chen.
 # Create on 2017-08-09
 from __future__ import absolute_import
+import urllib
 import json
 import logging
 import functools
@@ -120,6 +121,13 @@ class BaseCorsHandler(BaseHandler):
                 'message': reason,
             }
         })
+
+    def get_json_body(self):
+        try:
+            data = json.loads(self.request.body)
+        except:
+            data = json.loads(urllib.unquote_plus(self.request.body))
+        return data
 
 
 def authentication(method):

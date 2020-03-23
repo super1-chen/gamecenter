@@ -53,7 +53,7 @@ class GameLogsHandler(BaseCorsHandler):
 
         uid, channel = self.get_uid_channel()
         LOG.info("request body %s" % self.request.body)
-        data = json.loads(self.request.body)
+        data = self.get_json_body()
         room_id = data.get("room_id")
         game_id = data.get("game_id")
         timestamp = data.get("timestamp")
