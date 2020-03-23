@@ -14,7 +14,6 @@ import os
 from alembic import command as alembic_command
 from alembic import config as alembic_config
 from alembic import util as alembic_util
-
 from gamecenter import cfg
 from gamecenter import db
 from gamecenter import log
@@ -116,6 +115,14 @@ def _launch_python():
     code.interact()
 
 
+def do_dump_config(args):
+    from gamecenter import cfg
+
+    # force all config return to default value
+    reload(cfg)
+    cfg.dump_example_config()
+
+
 def main():
     main_parser = argparse.ArgumentParser()
     main_parser.add_argument('-c', '--config', help='use specific config file')
@@ -162,6 +169,10 @@ def main():
     parser.add_argument('--autogenerate', action='store_true', default=True)
     parser.add_argument('--sql', action='store_true')
     parser.set_defaults(func=do_revision)
+
+    parser = subparsers.add_parser(
+        'dump_config', help="Dump example config into gamecenter.conf.sample")
+    parser.set_defaults(func=do_dump_config)
 
     args = main_parser.parse_args()
 
