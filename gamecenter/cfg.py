@@ -33,7 +33,7 @@ def load_config(path=None, default=False):
     '''
     global _load
     if not default:
-        path = path or os_path.join(_get_etc_dir(), 'xedge.conf')
+        path = path or os_path.join(_get_etc_dir(), 'gamecenter.conf')
         _CFG.read(path)
     _load = True
 

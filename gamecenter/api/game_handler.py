@@ -8,10 +8,12 @@ __author__ = 'Albert'
 
 import time
 import json
+import logging
 
 from gamecenter.api.base import BaseCorsHandler
 from gamecenter.mongodb import api as mongo_api
 
+LOG = logging.getLogger(__name__)
 
 class GameLogsHandler(BaseCorsHandler):
     def get(self):
@@ -50,6 +52,7 @@ class GameLogsHandler(BaseCorsHandler):
         """
 
         uid, channel = self.get_uid_channel()
+        LOG.info("request body %s" % self.request.body)
         data = json.loads(self.request.body)
         room_id = data.get("room_id")
         game_id = data.get("game_id")
