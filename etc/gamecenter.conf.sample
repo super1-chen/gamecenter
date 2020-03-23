@@ -1,0 +1,12 @@
+[DEFAULT]
+# whether enable debug logging = None
+debug = true
+
+[DB]
+# datebase url that xedge itself maintained
+sql_connection = mysql://root:123456@localhost/gamecenter
+
+[MONGODB]
+# mongo address 1
+address = 127.0.0.1:27017
+
