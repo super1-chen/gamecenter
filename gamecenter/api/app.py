@@ -32,6 +32,7 @@ main_pattern = [
 
 user_patterns = [
     (URL_PREFIX + r"/user_info", user_handler.UserHandler),
+    (URL_PREFIX + r"/user_logout", user_handler.UserLogoutHandler),
 ]
 
 game_patters = [
