@@ -97,7 +97,7 @@ class BaseCorsHandler(BaseHandler):
         else:
             status_code = 500
             reason = str(err)
-        self.set_status(err.status_code)
+        self.set_status(status_code)
 
         self.finish({
             'error': {
