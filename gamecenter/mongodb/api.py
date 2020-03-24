@@ -86,7 +86,7 @@ def post_current_logs(timestamp, game_id, room_id, channel_id, logs):
         room_id=room_id, game_id=game_id).first()
 
     kwargs = dict(
-        times_tamp=timestamp,
+        times_stamp=timestamp,
         game_id=game_id,
         channel_id=channel_id,
         logs=logs
