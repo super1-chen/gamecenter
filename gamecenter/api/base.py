@@ -90,11 +90,19 @@ class BaseCorsHandler(BaseHandler):
 
     def write_error(self, *args, **kwargs):
         err_cls, err, traceback = kwargs['exc_info']
+
+        if hasattr(err, "status_code"):
+            status_code = err.status_code
+            reason = err.reason
+        else:
+            status_code = 500
+            reason = str(err)
         self.set_status(err.status_code)
+
         self.finish({
             'error': {
-                'code': err.status_code,
-                'message': err.reason,
+                'code': status_code,
+                'message': reason,
             }
         })
 
