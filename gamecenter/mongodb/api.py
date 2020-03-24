@@ -95,7 +95,7 @@ def post_current_logs(timestamp, game_id, room_id, channel_id, logs):
     if log:
         log.update(**kwargs)
     else:
-        log = models.GameCurrentLogs(kwargs)
+        log = models.GameCurrentLogs(**kwargs)
         log.save()
 
 
