@@ -35,7 +35,8 @@ user_patterns = [
 ]
 
 game_patters = [
-    (URL_PREFIX + r"/game_logs", game_handler.GameLogsHandler)
+    (URL_PREFIX + r"/game_logs", game_handler.GameLogsHandler),
+    (URL_PREFIX + r"/game_current_logs", game_handler.GameCurrentLogsHandler)
 ]
 
 url_patterns = user_patterns + game_patters + main_pattern

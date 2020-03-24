@@ -17,7 +17,7 @@ LOG = logging.getLogger(__name__)
 
 
 def init_mongo_connection():
-    address = cfg.config().get("MONGODB",'address')
+    address = cfg.config().get("MONGODB", 'address')
     # username = cfg.config().get("MONGODB",'username', raw=True)
     # password = cfg.config().get("MONGODB", 'password', raw=True)
     # megset = cfg.config().get("MONGODB", 'megset', raw=True)
@@ -49,6 +49,7 @@ def init_mongo_connection():
             connect=False
         )
 
+
 def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs):
     log = models.GameLogs(
         uid=uid,
@@ -61,9 +62,7 @@ def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs):
     log.save()
 
 
-
 def get_game_logs(room_id, start, end):
-
     logs = models.GameLogs.objects.filter(
         room_id=room_id,
         time_stamp__gt=start,
@@ -71,7 +70,6 @@ def get_game_logs(room_id, start, end):
     )
     ret = []
     for log in logs:
-
         ret.append(
             {
                 "timestamp": log.time_stamp,
@@ -81,3 +79,25 @@ def get_game_logs(room_id, start, end):
             }
         )
     return ret
+
+
+def post_current_logs(timestamp, game_id, room_id, channel_id, logs):
+    log = models.GameCurrentLogs.objects.filter(
+        room_id=room_id, game_id=game_id).first()
+
+    kwargs = dict(
+        times_tamp=timestamp,
+        game_id=game_id,
+        channel_id=channel_id,
+        logs=logs
+    )
+
+    if log:
+        log.update(**kwargs)
+    else:
+        log = models.GameCurrentLogs(kwargs)
+        log.save()
+
+
+def get_current_logs(game_id, room_id):
+    return models.GameCurrentLogs.objects.filter(room_id=room_id, game_id=game_id).first()

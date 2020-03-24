@@ -30,6 +30,7 @@ def user_get_by_uid_channel(uid, channel):
     query = sess.query(model).filter_by(uid=uid, channel=channel)
     return query.one_or_none()
 
+
 def find_user(uid, channel):
     user = user_get_by_uid_channel(uid, channel)
     if user is None:
