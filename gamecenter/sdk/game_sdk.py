@@ -5,14 +5,25 @@ import hashlib
 import json
 import logging
 
-from tornado import gen
-from tornado.httpclient import HTTPClient
-from tornado.httpclient import HTTPError
-from tornado.httpclient import HTTPRequest
-
-LOG = logging.getLogger(__name__)
+import requests
+from tornado.web import HTTPError
 
 ERROR_MSG = {
+    0: "success",
+    -1: "empty params error",
+    -2: "missing signature",
+    -3: "missing key words userId",
+    -4: "missing key words gameId",
+    -5: "missing key words time",
+    -6: "signature error",
+    -7: "user logged error",
+    -8: "wrong channel error",
+    -9: "company not exist",
+    -10: "game not exist",
+    -99: "unknown error"
+}
+
+ERROR_MSG_ALIAS = {
     0: u"成功",
     -1: u"参数为空",
     -2: u"签名错误",
@@ -23,8 +34,8 @@ ERROR_MSG = {
     -7: u"已经登陆,不能重复登录",
     -8: u"渠道号错误",
     -9: u"公司不存在",
-    -10: u"游戏不存在"
-
+    -10: u"游戏不存在",
+    -99: u"未知错误"
 }
 
 
@@ -40,13 +51,10 @@ class GameSdk(object):
         "request_timeout": 60
     }
 
-    def __init__(self):
-        # self.secret_key = cfg.config().get('SDK', 'cp_game_key')
-        self.secret_key = "pg@wowei#!QAZ@WSX"
-        # self.host = cfg.config().get("SDK", "host")
-        self.host = "http://fw.woweicm.com"
-        self.http_client = HTTPClient()
-        self.logger = LOG
+    def __init__(self, host, security_key):
+        self.secret_key = security_key
+        self.host = host
+        self.logger = logging.getLogger("game sdk")
 
     def sign_generate(self, data):
         raw_str = ""
@@ -64,7 +72,6 @@ class GameSdk(object):
         sign = hashlib.md5(raw_str).hexdigest()
         return sign
 
-    @gen.coroutine
     def _fetch_request(self, api, req_body):
 
         fetch = copy.deepcopy(self.default_options)
@@ -75,24 +82,30 @@ class GameSdk(object):
         fetch["body"] = body
         fetch["url"] = url
 
-        raise gen.Return(HTTPRequest(**fetch))
+        return requests.post(url, json=req_body, timeout=600)
 
-    @gen.coroutine
     def fetch_response(self, api, req_body):
-
         try:
-            request = yield self._fetch_request(api, req_body)
-            response = yield gen.maybe_future(self.http_client.fetch(request))
-
-        except HTTPError as e:
-            self.logger.exception(e)
-            raise gen.Return({"msg": ""})
+            self.logger.info("post api %s body %s" %(api, req_body))
+            resp = self._fetch_request(api, req_body)
+        except requests.Timeout as e:
+            self.logger.error(e)
+            status_code = 500
+            reason = 'sdk响应超时'
+            raise HTTPError(status_code=status_code, reason=reason)
         else:
-            if response.code == 200:
-                resp_json = json.loads(response.body)
-                raise gen.Return(resp_json)
-            else:
-                raise gen.Return({"msg": ""})
+            if resp.status_code == 200:
+                resp_json = resp.json()
+                code = int(resp_json.get("code", -99))
+
+                if int(code) == 0:
+                    self.logger.info("get sdk %s success %s" % (api, resp_json))
+                    return resp_json
+                else:
+                    error_message = ERROR_MSG.get(code, ERROR_MSG.get(-99))
+                    error_message_alias = ERROR_MSG_ALIAS.get(code, ERROR_MSG_ALIAS.get(-99))
+                    self.logger.error("get skd %s failed by %s" % (api, error_message))
+                    raise HTTPError(status_code=400, reason=error_message_alias)
 
     def user_login_out(self, uids, channel_id):
         api = "/api/loginout"
@@ -110,7 +123,7 @@ class GameSdk(object):
         }
         return self.fetch_response(api, req_body)
 
-    def get_games(self, position):
+    def get_games(self, position="1"):
         api = "/api/getgames"
 
         sign_list = [position]
@@ -156,4 +169,14 @@ class GameSdk(object):
         return self.fetch_response(api, req_body)
 
 
-sdk = GameSdk()
+SDK_CACHE = {}
+
+
+def create_sdk(host, secret_key):
+    key = hashlib.md5(host + secret_key).hexdigest()
+    if key in SDK_CACHE and SDK_CACHE.get(key) is not None:
+        sdk = SDK_CACHE.get(key)
+    else:
+        sdk = GameSdk(host, secret_key)
+        SDK_CACHE[key] = sdk
+    return sdk

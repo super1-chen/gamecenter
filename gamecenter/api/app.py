@@ -37,7 +37,8 @@ user_patterns = [
 
 game_patters = [
     (URL_PREFIX + r"/game_logs", game_handler.GameLogsHandler),
-    (URL_PREFIX + r"/game_current_logs", game_handler.GameCurrentLogsHandler)
+    (URL_PREFIX + r"/game_current_logs", game_handler.GameCurrentLogsHandler),
+    (URL_PREFIX + r"/game_list", game_handler.GameListHandler)
 ]
 
 room_patterns = [
@@ -60,7 +61,6 @@ url_patterns = user_patterns +\
 class WebApp(tornado.web.Application):
     def __init__(self, debug=False):
         handlers = url_patterns
-        print url_patterns
         setting = dict(debug=debug, default_handler_class=error_handler.NotFoundHandler)
         tornado.web.Application.__init__(
             self, handlers, autoreload=True, **setting

@@ -4,11 +4,14 @@
 # CopyRight (py) 2017年 陈超. All rights reserved by Chao.Chen.
 # Create on 2017-08-09
 from __future__ import absolute_import
-import urllib
+
 import json
 import logging
+import urllib
 
 import tornado.web
+from gamecenter import cfg
+from gamecenter.sdk.game_sdk import create_sdk
 
 logger = logging.getLogger('__name__')
 
@@ -54,12 +57,17 @@ class BaseHandler(tornado.web.RequestHandler):
 
             logger.debug("Returning default argument %s, as we"
                          " couldn't find '%s' in %s" % (
-                         default, name, self.request.arguments))
+                             default, name, self.request.arguments))
 
             return default
         arg = self.request.arguments[name]
         logger.debug("Found %s: %s in JSON argument" % (name, arg))
         return arg
+
+    def create_sdk(self):
+        host = cfg.config().get("SDK", "host")
+        secret_key = cfg.config().get('SDK', 'cp_game_key')
+        return create_sdk(host, secret_key)
 
 
 class BaseCorsHandler(BaseHandler):
@@ -126,7 +134,6 @@ class BaseCorsHandler(BaseHandler):
             self.write_error_message(400, "缺少参数game_id")
         else:
             return game_id
-
 
     def write_error_message(self, status_code, reason):
         self.set_status(status_code)

@@ -143,3 +143,25 @@ class GameCurrentLogsHandler(BaseCorsHandler):
             "code": 200,
             "data": "{}"
         })
+
+
+class GameListHandler(BaseCorsHandler):
+    def get(self):
+        self.get_uid_channel()
+        sdk = self.create_sdk()
+        req_json = sdk.get_games()
+        data = req_json["data"]
+
+        games = map(self._format_games, data)
+        self.write({
+            "code": 200,
+            "data": json.dumps(games)
+        })
+
+    def _format_games(self, game):
+        return {
+            "desc": game["desc"],
+            "icon": game["iconUrl"],
+            "id": game["id"],
+            "name": game["name"]
+        }

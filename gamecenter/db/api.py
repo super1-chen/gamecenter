@@ -51,20 +51,24 @@ def user_get_by_uid_channel(uid, channel):
 
 
 def user_create(**kwargs):
+    channel = kwargs.get("channel_id")
+    uid = kwargs.get("uid")
     insanity_dict = {
-        "uid": kwargs.get("uid"),
+        "uid": uid,
         "icon": kwargs.get("icon"),
-        "channel": kwargs.get("channel_id"),
+        "channel": channel,
         "name": kwargs.get("name")
     }
 
     sess = get_session()
     with sess.begin():
-        user = models.User()
+        user = sess.query(models.User).filter_by(uid=uid, channel=channel).one_or_none()
+        if user is None:
+            user = models.User()
         for k, v in insanity_dict.items():
             setattr(user, k, v)
         sess.add(user)
-
+    return user
 
 def user_delete(uid, channel):
     model = models.User
