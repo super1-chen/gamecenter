@@ -8,6 +8,8 @@ __author__ = 'Albert'
 
 import json
 
+from tornado.web import HTTPError
+
 from gamecenter.api.base import BaseCorsHandler
 from gamecenter.db import api as db_api
 
@@ -22,7 +24,10 @@ class UserHandler(BaseCorsHandler):
         if user is None:
             resp_json = sdk.get_user_info(uid, channel_id)
             if resp_json.get("code") == 0:
-                data = resp_json["data"]
+                data = resp_json.get("data")
+                if data is None:
+                    raise HTTPError(status_code=400, reason=u"未找到用户")
+
                 user = {
                     "uid": data.get("uid"),
                     "icon": data.get("iconUrl"),
