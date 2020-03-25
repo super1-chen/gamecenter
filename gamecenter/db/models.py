@@ -7,19 +7,18 @@
 __author__ = 'Albert'
 import logging
 
+from gamecenter import utils as center_utils
+from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import VARCHAR
 from sqlalchemy import UniqueConstraint
+from sqlalchemy import VARCHAR
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
-
-from gamecenter import utils as center_utils
 
 BASE = declarative_base()
 LOG = logging.getLogger(__name__)
@@ -40,7 +39,6 @@ class User(BASE):
     icon = Column(VARCHAR(1024), nullable=False, server_default=text("''"))
 
 
-
 class Game(BASE):
     __tablename__ = 'games'
     id = Column(Integer, primary_key=True)  # // 这边id可以自己生成
@@ -58,6 +56,7 @@ class Room(BASE):
     people = Column(Integer, default=0)
     game_id = Column(Integer, ForeignKey('games.id'))
     users = relationship("UserRoomAssociation")
+    start_time = Column(BigInteger, default=0)
 
 
 class UserRoomAssociation(BASE):

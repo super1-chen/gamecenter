@@ -120,6 +120,14 @@ class BaseCorsHandler(BaseHandler):
         else:
             return uid, channel_id
 
+    def get_game_id(self):
+        game_id = self.get_query_argument("game_id", default=None)
+        if game_id is None:
+            self.write_error_message(400, "缺少参数game_id")
+        else:
+            return game_id
+
+
     def write_error_message(self, status_code, reason):
         self.set_status(status_code)
         self.finish({

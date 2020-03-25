@@ -93,7 +93,8 @@ class GameCurrentLogsHandler(BaseCorsHandler):
         log = mongo_api.get_current_logs(game_id, room_id)
 
         if log is None:
-            return {}
+
+            ret_log = {}
 
         else:
             ret_log = {
