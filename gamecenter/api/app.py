@@ -13,10 +13,10 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-import tornado.wsgi
-from tornado.options import options
+
 
 from gamecenter.api import game_handler
+from gamecenter.api import room_handler
 from gamecenter.api import user_handler
 from gamecenter.api import error_handler
 from gamecenter.api import main_handler
@@ -36,10 +36,25 @@ user_patterns = [
 ]
 
 game_patters = [
-    (URL_PREFIX + r"/game_logs", game_handler.GameLogsHandler)
+    (URL_PREFIX + r"/game_logs", game_handler.GameLogsHandler),
+    (URL_PREFIX + r"/game_current_logs", game_handler.GameCurrentLogsHandler)
 ]
 
-url_patterns = user_patterns + game_patters + main_pattern
+room_patterns = [
+    (URL_PREFIX + r"/room_list", room_handler.RoomListHandler),
+    (URL_PREFIX + r"/room", room_handler.RoomHandler),
+    (URL_PREFIX + r"/room/(\d+)", room_handler.RoomHandler),
+    (URL_PREFIX + r"/join_room", room_handler.RoomJoinHandler),
+    (URL_PREFIX + r"/quit_room", room_handler.RoomQuitHandler),
+    (URL_PREFIX + r"/room/(\d+)", room_handler.RoomHandler),
+    (URL_PREFIX + r"/game_over", room_handler.GameOverHandler),
+    (URL_PREFIX + r"/game_start", room_handler.GameStartHandler),
+]
+
+url_patterns = user_patterns +\
+               game_patters + \
+               main_pattern +\
+               room_patterns
 
 
 class WebApp(tornado.web.Application):

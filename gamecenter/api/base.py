@@ -7,7 +7,6 @@ from __future__ import absolute_import
 import urllib
 import json
 import logging
-import functools
 
 import tornado.web
 
@@ -91,11 +90,19 @@ class BaseCorsHandler(BaseHandler):
 
     def write_error(self, *args, **kwargs):
         err_cls, err, traceback = kwargs['exc_info']
-        self.set_status(err.status_code)
+
+        if hasattr(err, "status_code"):
+            status_code = err.status_code
+            reason = err.reason
+        else:
+            status_code = 500
+            reason = str(err)
+        self.set_status(status_code)
+
         self.finish({
             'error': {
-                'code': err.status_code,
-                'message': err.reason,
+                'code': status_code,
+                'message': reason,
             }
         })
 
@@ -113,6 +120,14 @@ class BaseCorsHandler(BaseHandler):
         else:
             return uid, channel_id
 
+    def get_game_id(self):
+        game_id = self.get_query_argument("game_id", default=None)
+        if game_id is None:
+            self.write_error_message(400, "缺少参数game_id")
+        else:
+            return game_id
+
+
     def write_error_message(self, status_code, reason):
         self.set_status(status_code)
         self.finish({
@@ -128,26 +143,3 @@ class BaseCorsHandler(BaseHandler):
         except:
             data = json.loads(urllib.unquote_plus(self.request.body))
         return data
-
-
-def authentication(method):
-    """Decorate methods with this to require that the user be logged in.
-
-        If the user is not logged in, they will be redirected to the configured
-        `login url <RequestHandler.get_login_url>`.
-
-        If you configure a login url with a query parameter, Tornado will
-        assume you know what you're doing and use it as-is.  If not, it
-        will add a `next` parameter so the login page knows where to send
-        you once you're logged in.
-        """
-
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if not self.current_user:
-            self.set_status(400)
-            self.write({'status': "failed", "message": "no user info"})
-        else:
-            return method(self, *args, **kwargs)
-
-    return wrapper

@@ -29,3 +29,21 @@ class GameLogs(Document):
         ],
         'ordering': ['+time_stamp']
     }
+
+
+class GameCurrentLogs(Document):
+    # 是游戏平台穿过来的id
+    time_stamp = IntField(default=lambda: int(time.time()))
+    room_id = IntField(default=1)
+    game_id = IntField(default=1)
+    channel_id = StringField(max_length=1024)
+    logs = StringField(max_length=2048, default="")
+
+    meta = {
+        'db_alias': 'gamecenter',
+        'indexes': [
+            "game_id",
+            "room_id",
+        ],
+        'ordering': ['+time_stamp']
+    }
