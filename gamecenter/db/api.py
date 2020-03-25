@@ -5,6 +5,7 @@
 # Create on 2020-03-22
 
 __author__ = 'Albert'
+
 import logging
 import time
 
@@ -12,6 +13,7 @@ from gamecenter import cfg
 from gamecenter import exception as g_exce
 from gamecenter.db import base
 from gamecenter.db import models
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
@@ -48,6 +50,29 @@ def user_get_by_uid_channel(uid, channel):
     return query.one_or_none()
 
 
+def user_create(**kwargs):
+    insanity_dict = {
+        "uid": kwargs.get("uid"),
+        "icon": kwargs.get("icon"),
+        "channel": kwargs.get("channel_id"),
+        "name": kwargs.get("name")
+    }
+
+    sess = get_session()
+    with sess.begin():
+        user = models.User()
+        for k, v in insanity_dict.items():
+            setattr(user, k, v)
+        sess.add(user)
+
+
+def user_delete(uid, channel):
+    model = models.User
+    sess = get_session()
+    with sess.begin():
+        sess.query(model).filter_by(uid=uid, channel=channel).delete()
+
+
 def find_user(uid, channel):
     user = user_get_by_uid_channel(uid, channel)
     if user is None:
@@ -82,6 +107,7 @@ def find_room(room_id):
     room = room_get_by_id(room_id)
     if room is None:
         raise g_exce.GameHttpError(reason=ErrorMessage.room_no_found % room_id, status_code=400)
+
     return room
 
 
@@ -132,6 +158,7 @@ def user_in_room(user_id, room_id):
     return sess.query(Associaton).filter_by(user_id=user_id, room_id=room_id).count() > 0
 
 
+
 def check_room_full(room_id):
     A = models.UserRoomAssociation
     room = find_room(room_id)
@@ -179,6 +206,7 @@ def delete_room(uid, channel_id, room_id):
 
 
 def start_game(uid, channel, room_id):
+
     user = find_user(uid, channel)
     room = find_room(room_id)
     if not user_in_room(user.id, room.id):

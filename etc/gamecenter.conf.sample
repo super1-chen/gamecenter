@@ -1,10 +1,15 @@
 [DEFAULT]
-# whether enable debug logging = None
+# whether enable debug logging
 debug = true
 
 [DB]
 # datebase url that xedge itself maintained
 sql_connection = mysql://root:123456@localhost/gamecenter
+
+[SDK]
+# the secret key
+cp_game_key = pg@wowei#!QAZ@WSX
+host = http://fw.woweicm.com
 
 [MONGODB]
 # mongo address 1
