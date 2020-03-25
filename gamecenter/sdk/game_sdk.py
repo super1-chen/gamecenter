@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import hashlib
 import json
 import logging
 
-import requests
-
-from gamecenter import cfg
+from tornado import gen
+from tornado.httpclient import HTTPClient
+from tornado.httpclient import HTTPError
+from tornado.httpclient import HTTPRequest
 
 LOG = logging.getLogger(__name__)
 
@@ -27,9 +29,24 @@ ERROR_MSG = {
 
 
 class GameSdk(object):
+    default_options = {
+        "method": "POST",
+        "headers": {
+            "Content-Type": 'application/json',
+            "Content-Encoding": 'utf-8'
+        },
+        "validate_cert": False,
+        "connect_timeout": 20,
+        "request_timeout": 60
+    }
 
     def __init__(self):
-        self.secret_key = cfg.config().get('SDK', 'cp_game_key')
+        # self.secret_key = cfg.config().get('SDK', 'cp_game_key')
+        self.secret_key = "pg@wowei#!QAZ@WSX"
+        # self.host = cfg.config().get("SDK", "host")
+        self.host = "http://fw.woweicm.com"
+        self.http_client = HTTPClient()
+        self.logger = LOG
 
     def sign_generate(self, data):
         raw_str = ""
@@ -47,48 +64,35 @@ class GameSdk(object):
         sign = hashlib.md5(raw_str).hexdigest()
         return sign
 
-    def proxy_request(self, api, method="post", data=None,
-                      json_data=None, params=None, timeout=60):
-        host = cfg.config().get("SDK", "host")
+    @gen.coroutine
+    def _fetch_request(self, api, req_body):
 
-        url = host + api
+        fetch = copy.deepcopy(self.default_options)
 
-        msg = ""
-        msg_fmt = "Server Error: %s"
-        code = 500
-        ret = None
+        url = self.host + api
+        body = json.dumps(req_body)
+
+        fetch["body"] = body
+        fetch["url"] = url
+
+        raise gen.Return(HTTPRequest(**fetch))
+
+    @gen.coroutine
+    def fetch_response(self, api, req_body):
 
         try:
-            headers = {
-                "Content-Type": 'application/json',
-                "Content-Encoding": 'utf-8'
-            }
-            kwargs = {
-                "headers": headers,
-                "verify": False,
-                "data": data,
-                "json": json_data,
-                "params": params,
-                "timeout": timeout
-            }
-            resp = requests.request(method, url, **kwargs)
-            status_code = resp.status_code
-            resp_json = resp.json()
+            request = yield self._fetch_request(api, req_body)
+            response = yield gen.maybe_future(self.http_client.fetch(request))
 
-            if status_code != 200:
-                code = status_code
-                msg = msg_fmt % resp_json
+        except HTTPError as e:
+            self.logger.exception(e)
+            raise gen.Return({"msg": ""})
+        else:
+            if response.code == 200:
+                resp_json = json.loads(response.body)
+                raise gen.Return(resp_json)
             else:
-                code = resp_json.get("code")
-                msg = ERROR_MSG.get(code)
-                ret = resp_json.get("data")
-
-        except requests.RequestException as e:
-            LOG.error(e)
-            msg = msg_fmt % str(e)
-
-        finally:
-            return code, msg, ret
+                raise gen.Return({"msg": ""})
 
     def user_login_out(self, uids, channel_id):
         api = "/api/loginout"
@@ -97,34 +101,34 @@ class GameSdk(object):
             uids = ";".join(uids)
 
         sign_list = [uids, channel_id]
-        req_json = {
+        req_body = {
             "data": {
                 "uids": uids,
                 "channelId": channel_id
             },
             "signature": self.sign_generate(sign_list)
         }
-        return self.proxy_request(api=api, data=req_json)
+        return self.fetch_response(api, req_body)
 
     def get_games(self, position):
         api = "/api/getgames"
 
         sign_list = [position]
-        req_json = {
+        req_body = {
             "data": {
                 "position": position
             },
             "signature": self.sign_generate(sign_list)
         }
 
-        return self.proxy_request(api=api, data=req_json)
+        return self.fetch_response(api, req_body)
 
     def get_user_info(self, uid, channel_id):
         api = "/api/getuserinfo"
 
         sign_list = [uid, channel_id]
 
-        req_json = {
+        req_body = {
             "data": {
                 "uid": uid,
                 "channelId": channel_id
@@ -132,14 +136,14 @@ class GameSdk(object):
             "signature": self.sign_generate(sign_list)
         }
 
-        return self.proxy_request(api=api, data=req_json)
+        return self.fetch_response(api, req_body)
 
     def user_login(self, uid, name, channel_id, game_id, icon_url):
         api = "/api/login"
 
         sign_list = [icon_url, game_id, channel_id, name, uid]
 
-        req_json = {
+        req_body = {
             "data": {
                 "uid": uid,
                 "name": name,
@@ -149,5 +153,7 @@ class GameSdk(object):
             },
             "signature": self.sign_generate(sign_list)
         }
+        return self.fetch_response(api, req_body)
 
-        return self.proxy_request(api=api, data=req_json)
+
+sdk = GameSdk()

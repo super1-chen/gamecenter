@@ -5,22 +5,26 @@
 # Create on 2020-03-22
 
 __author__ = 'Albert'
+
 import logging
 
-from gamecenter.db import models
-from gamecenter.db import base
 from gamecenter import cfg
 from gamecenter import exception as g_exce
+from gamecenter.db import base
+from gamecenter.db import models
 
 LOG = logging.getLogger(__name__)
 
+
 class JOIN_STATUS(object):
-    join = 0 # 参加游戏的人
-    view = 1 # 观看游戏的人
+    join = 0  # 参加游戏的人
+    view = 1  # 观看游戏的人
+
 
 def get_session():
     maker = base.maker(cfg.config().get('DB', 'sql_connection'), False)
     return maker()
+
 
 # user
 def user_get_by_uid_channel(uid, channel):
@@ -29,6 +33,30 @@ def user_get_by_uid_channel(uid, channel):
     sess = get_session()
     query = sess.query(model).filter_by(uid=uid, channel=channel)
     return query.one_or_none()
+
+
+def user_create(**kwargs):
+    insanity_dict = {
+        "uid": kwargs.get("uid"),
+        "icon": kwargs.get("icon"),
+        "channel": kwargs.get("channel_id"),
+        "name": kwargs.get("name")
+    }
+
+    sess = get_session()
+    with sess.begin():
+        user = models.User()
+        for k, v in insanity_dict.items():
+            setattr(user, k, v)
+        sess.add(user)
+
+
+def user_delete(uid, channel):
+    model = models.User
+    sess = get_session()
+    with sess.begin():
+        sess.query(model).filter_by(uid=uid, channel=channel).delete()
+
 
 def find_user(uid, channel):
     user = user_get_by_uid_channel(uid, channel)
@@ -39,7 +67,6 @@ def find_user(uid, channel):
 
 
 def user_logout_by_uid_channel(uid, channel):
-
     model = models.User
 
     sess = get_session()
@@ -57,7 +84,7 @@ def room_get_by_id(room_id):
 def find_room(room_id):
     room = room_get_by_id(room_id)
     if room is None:
-        raise g_exce.GameHttpError(reason=u'未找到房间%s' %room_id , status_code=400)
+        raise g_exce.GameHttpError(reason=u'未找到房间%s' % room_id, status_code=400)
     return room
 
 
@@ -89,18 +116,17 @@ def room_create_by_game(game_id, uid, channel, people=2):
         sess.add(a)
     return ""
 
+
 def check_room_full(room_id):
     A = models.UserRoomAssociation
     room = find_room(room_id)
     room_people = room.people
     sess = get_session()
-    joined_people = sess.query(A).filter(A.room_id==room_id).filter(A.status==0).count()
+    joined_people = sess.query(A).filter(A.room_id == room_id).filter(A.status == 0).count()
     return room_people < joined_people
 
 
-
-def user_join_room(room_id,  uid, channel):
-
+def user_join_room(room_id, uid, channel):
     user = find_user(uid, channel)
     room = find_room(room_id)
     if check_room_full(room_id):
@@ -112,7 +138,6 @@ def user_join_room(room_id,  uid, channel):
         a.user_id = user.id
         a.room_id = room.id
         sess.add(a)
-
 
 
 def start_game(room_id, uid, channel):

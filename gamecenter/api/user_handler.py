@@ -10,7 +10,7 @@ import json
 
 from gamecenter.api.base import BaseCorsHandler
 from gamecenter.db import api as db_api
-from gamecenter.sdk.game_sdk import GameSdk
+from gamecenter.sdk.game_sdk import sdk
 
 
 class UserHandler(BaseCorsHandler):
@@ -19,17 +19,16 @@ class UserHandler(BaseCorsHandler):
         user = db_api.user_get_by_uid_channel(uid, channel_id)
 
         if user is None:
-            sdk = GameSdk()
-            code, msg, data = sdk.get_user_info(uid, channel_id)
-
-            if code == 0:
+            ret = sdk.get_user_info(uid, channel_id)
+            if ret.get("code") == 0:
                 user = {
-                    "uid": data.get("uid"),
-                    "icon": data.get("iconUrl"),
-                    "channel_id": data.get("channelId"),
-                    "game_id": data.get("gameId"),
-                    "name": data.get("name")
+                    "uid": ret.get("uid"),
+                    "icon": ret.get("iconUrl"),
+                    "channel_id": ret.get("channelId"),
+                    "game_id": ret.get("gameId"),
+                    "name": ret.get("name")
                 }
+                db_api.user_create(**user)
             else:
                 self.write_error_message(400, "用户不存在%s" % uid)
         else:
@@ -52,15 +51,15 @@ class UserHandler(BaseCorsHandler):
 class UserLogoutHandler(BaseCorsHandler):
     def get(self):
         uid, channel_id = self.get_uid_channel()
-        sdk = GameSdk()
 
-        code, msg, data = sdk.user_login_out(uid, channel_id)
-        if code != 0:
-            self.write_error_message(400, msg)
+        ret = sdk.user_login_out(uid, channel_id)
+        if ret.get("code") != 0:
+            self.write_error_message(400, ret.get("msg"))
 
         ret = {
             "code": 200,
             "data": "success"
         }
+        db_api.user_delete(uid, channel_id)
 
         self.write(ret)
