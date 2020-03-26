@@ -73,10 +73,8 @@ register('DB', 'sql_connection', "mysql://root:123456@localhost/gamecenter",
          comment='Datebase url that xedge itself maintained')
 
 # Mongodb part
-register('MONGODB', 'address', "127.0.0.1:27017", comment='mongo address 1')
-# register('MONGODB', 'username', '', comment='Mongodb username')
-# register('MONGODB', 'password', '', comment='Mongodb password')
-# register('MONGODB', 'megset', '', comment='Mongodb mgset')
+register('MONGODB', 'mongodb_url', "mongodb://127.0.0.1:27017", comment='mongo address')
+
 
 # SDK
 register('SDK', 'cp_game_key', "xxxx", comment='SDK keys')

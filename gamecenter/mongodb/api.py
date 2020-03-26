@@ -17,37 +17,10 @@ LOG = logging.getLogger(__name__)
 
 
 def init_mongo_connection():
-    address = cfg.config().get("MONGODB", 'address')
-    # username = cfg.config().get("MONGODB",'username', raw=True)
-    # password = cfg.config().get("MONGODB", 'password', raw=True)
-    # megset = cfg.config().get("MONGODB", 'megset', raw=True)
+    host = cfg.config().get("MONGODB", 'mongodb_url')
 
-    username = None
-    password = None
-    megset = None
-
-    host = address.split(',')
-    LOG.debug('start mongodb @ %(host)s' % {"host": address})
-    if len(host) > 1:
-        connect(
-            'gamecenter', 'gamecenter',
-            host=host,
-            replicaset=megset,
-            username=username,
-            password=password,
-            authentication_source='admin',
-            read_preference=ReadPreference.SECONDARY,
-            connect=False
-        )
-    else:
-        connect(
-            'gamecenter', 'gamecenter',
-            host=host,
-            username=username,
-            password=password,
-            authentication_source='admin',
-            connect=False
-        )
+    LOG.debug('start mongodb @ %(host)s' % {"host": host})
+    connect("gamecenter", "gamecenter", host=host)
 
 
 def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs):
