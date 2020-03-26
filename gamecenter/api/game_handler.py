@@ -32,12 +32,13 @@ class GameLogsHandler(BaseCorsHandler):
             end = int(time.time())
 
         logs = mongo_api.get_game_logs(room_id, start, end)
+        data = {"logs": logs}
 
         self.write(
             {
                 "code": 200,
                 "api_name": "get_game_logs",
-                "logs": json.dumps(logs)
+                "data": json.dumps(data)
             }
         )
 
@@ -108,7 +109,7 @@ class GameCurrentLogsHandler(BaseCorsHandler):
             {
                 "code": 200,
                 "api_name": "get_current_game_logs",
-                "logs": json.dumps(ret_log)
+                "data": json.dumps(ret_log)
             }
         )
 
@@ -157,10 +158,13 @@ class GameListHandler(BaseCorsHandler):
         data = req_json["data"]
 
         games = map(self._format_games, data)
+
+        data = {"game_list": games}
+
         self.write({
             "code": 200,
             "api_name": "get_game_list",
-            "data": json.dumps(games)
+            "data": json.dumps(data)
         })
 
     def _format_games(self, game):

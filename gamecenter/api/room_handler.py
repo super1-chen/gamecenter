@@ -35,11 +35,15 @@ class RoomListHandler(BaseCorsHandler):
             ret = _format_room(r)
 
             rets.append(ret)
+
+        room_list = {"room_list": rets}
+
         data = {
             "code": 0,
             "api_name": "get_room_list",
-            "data": json.dumps(rets)
+            "data": json.dumps(room_list)
         }
+
         self.write(data)
 
 
