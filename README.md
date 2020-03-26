@@ -247,8 +247,33 @@ optional arguments:
 |`-a`| host address 默认 127.0.0.1|
 |`-c`| config 文件的地址 默认app 根目录下的 etc中的gamecenter.conf|
 
+### game-manage
 
+```$
+$ game-manage --help
+usage: game-manage [-h] [-c CONFIG] [-v]
+                   {upgrade,downgrade,version,history,revision,dump_config}
+                   ...
 
+positional arguments:
+  {upgrade,downgrade,version,history,revision,dump_config}
+    upgrade             upgrade database verion
+    downgrade           downgrade database version
+    version             print current database version
+    history             print database migration history
+    revision            create an alembic file of database
+    dump_config         dump example config into gamecenter.conf.sample
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        use specific config file
+  -v, --verbose         increase output verbosity
+```
+
+|参数|说明|
+|----|----|
+|`-c`| config 文件的地址 默认app 根目录下的 etc中的gamecenter.conf|
 
 
 ## 参考文档
