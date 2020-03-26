@@ -131,7 +131,7 @@ def main():
                              action="store_true")
     subparsers = main_parser.add_subparsers()
 
-    parser = subparsers.add_parser('upgrade')
+    parser = subparsers.add_parser('upgrade', help="upgrade database verion")
     parser.add_argument('-d', '--database', default='gamecenter',
                         choices=DB_CHOICES,
                         help="choose database, default:gamecenter")
@@ -139,7 +139,7 @@ def main():
     parser.add_argument('revision', nargs='?')
     parser.set_defaults(func=do_upgrade)
 
-    parser = subparsers.add_parser('downgrade')
+    parser = subparsers.add_parser('downgrade', help="downgrade database version")
     parser.add_argument('-d', '--database', default='gamecenter',
                         choices=DB_CHOICES,
                         help="choose database, default: gamecenter")
@@ -161,7 +161,7 @@ def main():
                         help="choose database, default: gamecenter")
     parser.set_defaults(func=do_history)
 
-    parser = subparsers.add_parser('revision')
+    parser = subparsers.add_parser('revision', help="create a alembic file of database")
     parser.add_argument('-d', '--database', default='gamecenter',
                         choices=DB_CHOICES,
                         help="choose database, default: gamecenter")
@@ -171,7 +171,7 @@ def main():
     parser.set_defaults(func=do_revision)
 
     parser = subparsers.add_parser(
-        'dump_config', help="Dump example config into gamecenter.conf.sample")
+        'dump_config', help="dump example config into gamecenter.conf.sample")
     parser.set_defaults(func=do_dump_config)
 
     args = main_parser.parse_args()
