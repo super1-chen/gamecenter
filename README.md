@@ -112,24 +112,39 @@ $ mv gamecenter.conf.sample gamecenter.conf
 ```
 
 修改下面的内容
-```
+
+```shell
 [DEFAULT]
-# whether enable debug logging
-debug = false
+# whether enable debug logging = None
+debug = true
+# log size, unit: byte default 10mb = None
+log_size = 1048576
+# job log dirname = None
+job_log_dir = /home/game_logs
+# log file number = None
+log_num = 10
 
 [DB]
 # datebase url that xedge itself maintained
-sql_connection = mysql://root@localhost/gamecenter
+sql_connection = mysql://root:123456@localhost/gamecenter
 
 [MONGODB]
-# mongo address url
-mongo_connection = mongodb://username:password@localhost:27017?authSource=admin
+# mongo address
+mongodb_url = mongodb://127.0.0.1:27017
 
 [SDK]
 # sdk keys
-cp_game_key = abcdsaer12
-# # skd host
-host = http://fw.dewaeaf2.com
+cp_game_key = xxxx
+# skd host
+host = xxxx
+
+[WORKER]
+# the gamecenter app own crontab file path
+crontab_file = /etc/cron.d/game.tab
+
+[OLD_DATA]
+# old data key hours
+keep_hour = 6
 ```
 修改对应的配置的保存退出
 
@@ -221,9 +236,9 @@ curl localhost/v1
 
 该项目一共有三个入口
 
-1. game-api app api的主要入口
-2. game-manage 用来做一些命令行工具的操作
-3. game-worker 定时任务的入口（还在开发）
+1. game-api app api的主要入口 完成
+2. game-manage 用来做一些命令行工具的操作 完成
+3. game-worker 定时任务的入口 完成
 
 ### game-api
 
@@ -263,6 +278,10 @@ positional arguments:
     history             print database migration history
     revision            create an alembic file of database
     dump_config         dump example config into gamecenter.conf.sample
+    list_job            list app job
+    run_job             run app job manually
+
+
 
 optional arguments:
   -h, --help            show this help message and exit
