@@ -13,6 +13,7 @@ from gamecenter.worker import base
 class Cron(object):
     def __init__(self):
         self.tabfile = cfg.config().get("WORKER",'crontab_file')
+        self.log_dir = cfg.config().get("DEFAULT",'job_log_dir')
         open(self.tabfile, 'a').close()  # ensure crontab file exist
         self.cron = CronTab(tabfile=self.tabfile)
         self._logger = logging.getLogger("game.cron")
@@ -36,7 +37,7 @@ class Cron(object):
             for job in jobs:
                 job_name = job.origin_func.__name__
                 cron_job = self.cron.new(
-                    command + job_name + " >> /home/game_logs/%s.log 2>&1" % job_name)
+                    command + job_name + " >> %s 2>&1" % os.path.join(self.log_dir, job_name + ".log"))
                 # Both Huey task / periodic_task decorator's first position
                 # argument is validate_datetime
                 cron_job.setall(job.job_args[0].cron_format)

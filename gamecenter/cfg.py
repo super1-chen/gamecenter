@@ -68,7 +68,7 @@ def dump_example_config():
 # default
 register('DEFAULT', 'debug', 'true', comment='whether enable debug logging')
 register('DEFAULT', 'log_size', '1048576', comment='log size, unit: Byte default 10MB')
-register('DEFAULT', 'job_log_dir', '/home/gamecenter/game_logs', comment='job log dirname')
+register('DEFAULT', 'job_log_dir', '/home/game_logs', comment='job log dirname')
 register('DEFAULT', 'log_num', '10', comment='log file number')
 
 # mysql
