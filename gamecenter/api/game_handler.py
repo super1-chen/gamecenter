@@ -36,6 +36,7 @@ class GameLogsHandler(BaseCorsHandler):
         self.write(
             {
                 "code": 200,
+                "api_name": "get_game_logs",
                 "logs": json.dumps(logs)
             }
         )
@@ -72,6 +73,7 @@ class GameLogsHandler(BaseCorsHandler):
 
         self.write({
             "code": 200,
+            "api_name": "post_game_logs",
             "data": "{}"
         })
 
@@ -105,6 +107,7 @@ class GameCurrentLogsHandler(BaseCorsHandler):
         self.write(
             {
                 "code": 200,
+                "api_name": "get_current_game_logs",
                 "logs": json.dumps(ret_log)
             }
         )
@@ -141,6 +144,7 @@ class GameCurrentLogsHandler(BaseCorsHandler):
 
         self.write({
             "code": 200,
+            "api_name": "post_current_game_logs",
             "data": "{}"
         })
 
@@ -155,6 +159,7 @@ class GameListHandler(BaseCorsHandler):
         games = map(self._format_games, data)
         self.write({
             "code": 200,
+            "api_name": "get_game_list",
             "data": json.dumps(games)
         })
 

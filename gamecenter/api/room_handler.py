@@ -37,6 +37,7 @@ class RoomListHandler(BaseCorsHandler):
             rets.append(ret)
         data = {
             "code": 0,
+            "api_name": "get_room_list",
             "data": json.dumps(rets)
         }
         self.write(data)
@@ -54,6 +55,7 @@ class RoomHandler(BaseCorsHandler):
 
         data = {
             "code": 0,
+            "api_name": "get_room",
             "data": json.dumps(ret)
         }
         self.write(data)
@@ -76,6 +78,7 @@ class RoomHandler(BaseCorsHandler):
 
         data = {
             "code": 0,
+            "api_name": "create_room",
             "data": json.dumps(ret)
         }
         self.write(data)
@@ -86,6 +89,7 @@ class RoomHandler(BaseCorsHandler):
 
         data = {
             "code": 0,
+            "api_name": "delete_room",
             "data": json.dumps({})
         }
 
@@ -106,6 +110,7 @@ class RoomJoinHandler(BaseCorsHandler):
 
         data = {
             "code": 0,
+            "api_name": "join_game",
             "data": json.dumps({})
         }
         self.write(data)
@@ -119,6 +124,7 @@ class RoomQuitHandler(BaseCorsHandler):
 
         data = {
             "code": 0,
+            "api_name": "quit_game",
             "data": json.dumps({})
         }
         self.write(data)
@@ -139,6 +145,7 @@ class GameStartHandler(BaseCorsHandler):
 
         data = {
             "code": 0,
+            "api_name": "game_start",
             "data": json.dumps({})
         }
         self.write(data)
@@ -159,6 +166,7 @@ class GameOverHandler(BaseCorsHandler):
 
         data = {
             "code": 0,
+            "api_name": "game_over",
             "data": json.dumps({})
         }
         self.write(data)

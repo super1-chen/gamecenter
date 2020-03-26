@@ -49,6 +49,7 @@ class UserHandler(BaseCorsHandler):
 
         ret = {
             "code": 200,
+            "api_name": "get_user_info",
             "data": json.dumps(user)
         }
 
@@ -76,6 +77,7 @@ class UserHandler(BaseCorsHandler):
 
         ret = {
             "code": 200,
+            "api_name": "post_user_info",
             "data": ""
         }
 
@@ -94,6 +96,7 @@ class UserLogoutHandler(BaseCorsHandler):
 
         ret = {
             "code": 200,
+            "api_name": "user_logout",
             "data": ""
         }
         db_api.user_delete(uid, channel_id)
