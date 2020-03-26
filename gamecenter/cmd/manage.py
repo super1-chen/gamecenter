@@ -17,6 +17,8 @@ from alembic import util as alembic_util
 from gamecenter import cfg
 from gamecenter import db
 from gamecenter import log
+from gamecenter import utils
+from gamecenter.worker import base as wbase
 
 DB_CHOICES = ["gamecenter"]
 LOG = logging.getLogger(__name__)
@@ -123,6 +125,20 @@ def do_dump_config(args):
     cfg.dump_example_config()
 
 
+def do_list_jobs(args):
+    wbase.init()
+    with utils.TestingEnv():
+        from gamecenter import worker  # noqa
+    worker.pretty_print_jobs()
+
+
+def do_run_job(args):
+    wbase.init()
+    with utils.TestingEnv():
+        from gamecenter import worker  # noqa
+    worker.run_job(args.job_name)
+
+
 def main():
     main_parser = argparse.ArgumentParser()
     main_parser.add_argument('-c', '--config', help='use specific config file')
@@ -173,6 +189,13 @@ def main():
     parser = subparsers.add_parser(
         'dump_config', help="dump example config into gamecenter.conf.sample")
     parser.set_defaults(func=do_dump_config)
+
+    parser = subparsers.add_parser('list_job', help="list app job")
+    parser.set_defaults(func=do_list_jobs)
+
+    parser = subparsers.add_parser('run_job', help="run app job manually")
+    parser.add_argument('job_name')
+    parser.set_defaults(func=do_run_job)
 
     args = main_parser.parse_args()
 

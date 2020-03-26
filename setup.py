@@ -27,6 +27,7 @@ setuptools.setup(
         'console_scripts': [
             'game-api = gamecenter.cmd.api:main',
             'game-manage = gamecenter.cmd.manage:main',
+            'game-worker = gamecenter.cmd.worker:main',
         ]
     },
     py_modules=[],

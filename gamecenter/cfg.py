@@ -65,8 +65,11 @@ def dump_example_config():
         _CFG.write(configfile)
     LOG.info("Dump to file: %s successfully." % path)
 
-
+# default
 register('DEFAULT', 'debug', 'true', comment='whether enable debug logging')
+register('DEFAULT', 'log_size', '1048576', comment='log size, unit: Byte default 10MB')
+register('DEFAULT', 'job_log_dir', '/home/gamecenter/game_logs', comment='job log dirname')
+register('DEFAULT', 'log_num', '10', comment='log file number')
 
 # mysql
 register('DB', 'sql_connection', "mysql://root:123456@localhost/gamecenter",
@@ -79,3 +82,11 @@ register('MONGODB', 'mongodb_url', "mongodb://127.0.0.1:27017", comment='mongo a
 # SDK
 register('SDK', 'cp_game_key', "xxxx", comment='SDK keys')
 register('SDK', 'host', "xxxx", comment='SKD host')
+
+# WORKER
+register('WORKER', 'crontab_file', "/etc/cron.d/game.tab",
+         comment="the gamecenter app own crontab file path")
+
+
+# DELETE OLD DATA
+register('OLD_DATA', 'keep_hour', "6", comment="old data key hours")

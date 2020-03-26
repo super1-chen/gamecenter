@@ -8,7 +8,6 @@ __author__ = 'Albert'
 import logging
 
 from mongoengine import connect
-from pymongo import ReadPreference
 
 from gamecenter import cfg
 from gamecenter.mongodb import models
@@ -54,6 +53,17 @@ def get_game_logs(room_id, start, end):
     return ret
 
 
+def delete_game_logs(deadline):
+    """
+    delete date by end line
+
+    :param deadline: timestamp of deadline
+    :type deadline: int
+    :return:
+    """
+    models.GameLogs.objects.filter(time_stamp__lte=deadline).delete()
+
+
 def post_current_logs(timestamp, game_id, room_id, channel_id, logs):
     log = models.GameCurrentLogs.objects.filter(
         room_id=room_id, game_id=game_id).first()
@@ -75,3 +85,4 @@ def post_current_logs(timestamp, game_id, room_id, channel_id, logs):
 
 def get_current_logs(game_id, room_id):
     return models.GameCurrentLogs.objects.filter(room_id=room_id, game_id=game_id).first()
+

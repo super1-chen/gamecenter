@@ -1,14 +1,15 @@
-import os
-from os import path
 import logging
+import os
 from logging import handlers
 
 from gamecenter import cfg
 
+FMT = u'%(asctime)s %(levelname)-8s [%(name)s] %(message)s'
+
 
 def setup():
     logging.basicConfig(
-        format=(u'%(asctime)s %(levelname)-8s [%(name)s] %(message)s')
+        format=(FMT)
     )
     root_logger = logging.getLogger()
 
@@ -26,7 +27,6 @@ def setup():
         log.setLevel(logging.INFO)
 
 
-
 class LoggerMix(object):
     """
     Subclass will automatic get a field name `self.log`.
@@ -42,3 +42,20 @@ class LoggerMix(object):
     @property
     def log_name(self):
         return self.full_name + '.log'
+
+
+def add_rotating_file_handler(log, name):
+    path = cfg.config().get("DEFAULT", 'job_log_dir')
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+    file_handler = handlers.RotatingFileHandler(
+        os.path.join(path, name),
+        mode='a',
+        maxBytes=int(cfg.config().getint("DEFAULT", 'log_size')),
+        backupCount=int(cfg.config().get("DEFAULT", 'log_num')),
+        # if backupCount is 0, rollover not happend.
+    )
+    formatter = logging.Formatter(FMT)
+    file_handler.setFormatter(formatter)
+    log.addHandler(file_handler)

@@ -6,3 +6,4 @@ SQLAlchemy<1.1.0,>=1.0.10
 MySQL-python==1.2.5  # sudo apt-get install python-dev libmysqlclient-dev
 alembic==0.8.6
 requests==2.23.0
+python-crontab==2.2.5

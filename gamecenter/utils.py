@@ -5,10 +5,10 @@
 # Create on 2020-03-22
 
 __author__ = 'Albert'
-
+import argparse
 import datetime
 import hashlib
-import argparse
+import os
 
 from gamecenter import cfg
 
@@ -42,3 +42,21 @@ def format_time(datetime):
 
 def md5(string):
     return hashlib.md5(string).hexdigest()
+
+
+class TestingEnv(object):
+    """
+    Create a testing environment.
+
+    Set OS environment variable WAS_TESTING, and recovery it
+    to origin when exit.
+
+    """
+
+    def __enter__(self):
+        self.origin_is_testing = bool(os.environ.get('WAS_TESTING'))
+        os.environ["WAS_TESTING"] = '1'
+
+    def __exit__(self, *exc):
+        if not self.origin_is_testing:
+            os.environ.pop("WAS_TESTING")
