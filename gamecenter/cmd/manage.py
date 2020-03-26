@@ -161,7 +161,7 @@ def main():
                         help="choose database, default: gamecenter")
     parser.set_defaults(func=do_history)
 
-    parser = subparsers.add_parser('revision', help="create a alembic file of database")
+    parser = subparsers.add_parser('revision', help="create an alembic file of database")
     parser.add_argument('-d', '--database', default='gamecenter',
                         choices=DB_CHOICES,
                         help="choose database, default: gamecenter")
