@@ -150,7 +150,7 @@ class GameStartHandler(BaseCorsHandler):
         data = {
             "code": 0,
             "api_name": "game_start",
-            "data": json.dumps({})
+            "data": json.dumps({"int": 2})
         }
         self.write(data)
 
