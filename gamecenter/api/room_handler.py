@@ -53,7 +53,7 @@ class RoomHandler(BaseCorsHandler):
         self.get_uid_channel()
         room = db_api.room_get_by_id(room_id)
         if room is None:
-            raise GameHttpError(400, "room %s 不存在" % room_id)
+            raise GameHttpError(400, u"room %s 不存在" % room_id)
 
         ret = _format_room(room)
 
@@ -72,9 +72,9 @@ class RoomHandler(BaseCorsHandler):
         people = data.get("people", None)
 
         if game_id is None:
-            self.write_error_message(400, "缺少参数game_id")
+            self.write_error_message(400, u"缺少参数game_id")
         if people is None:
-            self.write_error_message(400, "缺少参数people")
+            self.write_error_message(400, u"缺少参数people")
 
         room = db_api.room_create_by_game(game_id, uid, channel_id, people)
 
@@ -108,7 +108,7 @@ class RoomJoinHandler(BaseCorsHandler):
         room_id = data.get("room_id", None)
 
         if room_id is None:
-            self.write_error_message(400, "缺少参数room_id")
+            self.write_error_message(400, u"缺少参数room_id")
 
         db_api.user_join_room(room_id, uid, channel_id)
 
@@ -143,7 +143,7 @@ class GameStartHandler(BaseCorsHandler):
         room_id = data.get("room_id", None)
 
         if room_id is None:
-            self.write_error_message(400, "缺少参数room_id")
+            self.write_error_message(400, u"缺少参数room_id")
 
         db_api.start_game(uid, channel_id, room_id)
 
@@ -164,7 +164,7 @@ class GameOverHandler(BaseCorsHandler):
         room_id = data.get("room_id", None)
 
         if room_id is None:
-            self.write_error_message(400, "缺少参数room_id")
+            self.write_error_message(400, u"缺少参数room_id")
 
         db_api.end_game(uid, channel_id, room_id)
 

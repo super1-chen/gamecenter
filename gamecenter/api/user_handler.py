@@ -37,7 +37,7 @@ class UserHandler(BaseCorsHandler):
                 }
                 db_api.user_create(**user)
             else:
-                self.write_error_message(400, "用户不存在%s" % uid)
+                self.write_error_message(400, u"用户不存在%s" % uid)
         else:
             user = {
                 "uid": user.uid,
@@ -64,13 +64,13 @@ class UserHandler(BaseCorsHandler):
         icon_url = data.get("icon_url")
 
         if name is None:
-            self.write_error_message(400, "缺少name")
+            self.write_error_message(400, u"缺少name")
 
         if game_id is None:
-            self.write_error_message(400, "缺少game_id")
+            self.write_error_message(400, u"缺少game_id")
 
         if icon_url is None:
-            self.write_error_message(400, "缺少icon_url")
+            self.write_error_message(400, u"缺少icon_url")
 
         sdk = self.create_sdk()
         sdk.user_login(uid, name, channel_id, game_id, icon_url)

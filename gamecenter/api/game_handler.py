@@ -26,7 +26,7 @@ class GameLogsHandler(BaseCorsHandler):
         end = self.get_query_argument("end", default=None)
 
         if room_id is None:
-            self.write_error_message(400, "缺少参数room_id")
+            self.write_error_message(400, u"缺少参数room_id")
 
         if end is None:
             end = int(time.time())
@@ -62,10 +62,10 @@ class GameLogsHandler(BaseCorsHandler):
         logs = data.get("logs")
 
         if room_id is None:
-            self.write_error_message(400, "缺少room_id")
+            self.write_error_message(400, u"缺少room_id")
 
         if game_id is None:
-            self.write_error_message(400, "缺少game_id")
+            self.write_error_message(400, u"缺少game_id")
 
         if timestamp is None:
             timestamp = int(time.time())
@@ -88,10 +88,10 @@ class GameCurrentLogsHandler(BaseCorsHandler):
         game_id = self.get_query_argument("game_id", None)
 
         if room_id is None:
-            self.write_error_message(400, "缺少参数room_id")
+            self.write_error_message(400, u"缺少参数room_id")
 
         if game_id is None:
-            self.write_error_message(400, "缺少参数game_id")
+            self.write_error_message(400, u"缺少参数game_id")
 
         log = mongo_api.get_current_logs(game_id, room_id)
 
@@ -133,10 +133,10 @@ class GameCurrentLogsHandler(BaseCorsHandler):
         logs = data.get("logs")
 
         if room_id is None:
-            self.write_error_message(400, "缺少room_id")
+            self.write_error_message(400, u"缺少room_id")
 
         if game_id is None:
-            self.write_error_message(400, "缺少game_id")
+            self.write_error_message(400, u"缺少game_id")
 
         if timestamp is None:
             timestamp = int(time.time())
