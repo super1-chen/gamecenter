@@ -8,9 +8,11 @@ __author__ = 'Albert'
 
 import json
 
+from tornado.web import HTTPError
+
 from gamecenter.api.base import BaseCorsHandler
 from gamecenter.db import api as db_api
-from gamecenter.exception import GameHttpError
+
 
 
 def _format_room(room_qset):
@@ -53,7 +55,7 @@ class RoomHandler(BaseCorsHandler):
         self.get_uid_channel()
         room = db_api.room_get_by_id(room_id)
         if room is None:
-            raise GameHttpError(400, u"room %s 不存在" % room_id)
+            raise HTTPError(status_code=400, reason=u"room %s 不存在" % room_id)
 
         ret = _format_room(room)
 
