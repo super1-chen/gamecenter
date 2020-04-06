@@ -111,7 +111,7 @@ class RoomJoinHandler(BaseCorsHandler):
 
         if room_id is None:
             self.write_error_message(400, u"缺少参数room_id")
-
+        db_api.user_quite_room(uid, channel_id)
         db_api.user_join_room(room_id, uid, channel_id)
 
         data = {
