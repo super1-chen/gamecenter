@@ -162,7 +162,6 @@ def user_in_room(user_id, room_id):
     return sess.query(Associaton).filter_by(user_id=user_id, room_id=room_id).count() > 0
 
 
-
 def check_room_full(room_id):
     A = models.UserRoomAssociation
     room = find_room(room_id)
@@ -197,6 +196,24 @@ def user_quite_room(uid, channel_id):
 
     sess = get_session()
     sess.query(model).filter(model.user_id == user.id).delete()
+
+
+def delete_empty_room(uid, channel_id):
+    user = find_user(uid, channel_id)
+    model = models.UserRoomAssociation
+
+    sess = get_session()
+    with sess.begin():
+        a = sess.query(model).filter(model.user_id == user.id).one()
+        room_id = a.room_id
+        delete_flag = False
+        if a is not None:
+            a_other = sess.query(model).filter(model.room_id == a.room_id, model.user_id != user.id).all()
+            if a_other == 0:
+                delete_flag = True
+            a.delete()
+        if delete_flag is True:
+            sess.query(models.Room).filter(models.Room.id == room_id).delete()
 
 
 def delete_room(uid, channel_id, room_id):

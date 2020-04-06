@@ -78,6 +78,7 @@ class RoomHandler(BaseCorsHandler):
         if people is None:
             self.write_error_message(400, u"缺少参数people")
 
+        db_api.delete_empty_room(uid, channel_id)
         room = db_api.room_create_by_game(game_id, uid, channel_id, people)
 
         ret = _format_room(room)
