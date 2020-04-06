@@ -89,6 +89,9 @@ class UserLogoutHandler(BaseCorsHandler):
         uid, channel_id = self.get_uid_channel()
         sdk = self.create_sdk()
 
+        if db_api.user_get_by_uid_channel(uid, channel_id):
+           db_api.user_quite_room(uid, channel_id)
+
         ret = sdk.user_login_out(uid, channel_id)
 
         if ret.get("code") != 0:
