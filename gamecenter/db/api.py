@@ -205,15 +205,16 @@ def delete_empty_room(uid, channel_id):
     sess = get_session()
     with sess.begin():
         a = sess.query(model).filter(model.user_id == user.id).one_or_none()
-        room_id = a.room_id
         delete_flag = False
+        room_id = None
         if a is not None:
+            room_id = a.room_id
             a_other = sess.query(model).filter(model.room_id == a.room_id, model.user_id != user.id).all()
             if a_other == 0:
                 delete_flag = True
             sess.delete(a)
             sess.flush()
-        if delete_flag is True:
+        if delete_flag is True and room_id is not None:
             sess.query(models.Room).filter(models.Room.id == room_id).delete()
 
 
