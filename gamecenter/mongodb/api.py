@@ -22,14 +22,15 @@ def init_mongo_connection():
     connect("gamecenter", "gamecenter", host=host)
 
 
-def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs):
+def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs, player_id=1):
     log = models.GameLogs(
         uid=uid,
         time_stamp=timestamp,
         room_id=room_id,
         game_id=game_id,
         logs=logs,
-        channel_id=channel_id
+        channel_id=channel_id,
+        player_id=player_id
     )
     log.save()
 
@@ -47,6 +48,7 @@ def get_game_logs(room_id, start, end):
                 "timestamp": log.time_stamp,
                 "uid": log.uid,
                 "channel_id": log.channel_id,
+                "player_id": log.player_id,
                 "logs": log.logs
             }
         )
@@ -64,7 +66,7 @@ def delete_game_logs(deadline):
     models.GameLogs.objects.filter(time_stamp__lte=deadline).delete()
 
 
-def post_current_logs(timestamp, game_id, room_id, channel_id, logs):
+def post_current_logs(timestamp, game_id, room_id, channel_id, logs, player_id):
     log = models.GameCurrentLogs.objects.filter(
         room_id=room_id, game_id=game_id).first()
 
@@ -73,7 +75,8 @@ def post_current_logs(timestamp, game_id, room_id, channel_id, logs):
         game_id=game_id,
         room_id=room_id,
         channel_id=channel_id,
-        logs=logs
+        logs=logs,
+        player_id=player_id
     )
 
     if log:
