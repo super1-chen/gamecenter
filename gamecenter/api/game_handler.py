@@ -71,7 +71,7 @@ class GameLogsHandler(BaseCorsHandler):
 
 
         if player_id is None:
-            self.write_error_message(400, u"player_id")
+            self.write_error_message(400, u"缺少play_id")
 
 
         if timestamp is None:
