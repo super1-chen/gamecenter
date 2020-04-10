@@ -21,6 +21,7 @@ class GameLogs(Document):
     channel_id = StringField(max_length=1024)
     logs = StringField(max_length=2048, default="")
     player_id = IntField(default=1)
+    next_player_id = IntField(default=2)
     meta = {
         'db_alias': 'gamecenter',
         'indexes': [
@@ -39,6 +40,7 @@ class GameCurrentLogs(Document):
     channel_id = StringField(max_length=1024)
     logs = StringField(max_length=2048, default="")
     player_id = IntField(default=1)
+    next_player_id = IntField(default=2)
     meta = {
         'db_alias': 'gamecenter',
         'indexes': [

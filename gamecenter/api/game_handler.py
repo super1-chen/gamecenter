@@ -50,6 +50,7 @@ class GameLogsHandler(BaseCorsHandler):
             "logs": "",
             "timestamp": 11313131,
             "player_id": 1
+            "next_player_id": 2
         }
         :return:
         """
@@ -61,6 +62,7 @@ class GameLogsHandler(BaseCorsHandler):
         game_id = data.get("game_id")
         timestamp = data.get("timestamp")
         player_id = data.get("player_id")
+        next_player_id = data.get("next_player_id")
         logs = data.get("logs")
 
         if room_id is None:
@@ -73,11 +75,13 @@ class GameLogsHandler(BaseCorsHandler):
         if player_id is None:
             self.write_error_message(400, u"缺少play_id")
 
+        if next_player_id is None:
+            self.write_error_message(400, u"缺少next_player_id")
 
         if timestamp is None:
             timestamp = int(time.time())
 
-        mongo_api.post_game_logs(timestamp, game_id, room_id, uid, channel, logs, player_id)
+        mongo_api.post_game_logs(timestamp, game_id, room_id, uid, channel, logs, player_id, next_player_id)
 
         self.write({
             "code": 200,
@@ -111,6 +115,7 @@ class GameCurrentLogsHandler(BaseCorsHandler):
                 "timestamp": log.time_stamp,
                 "logs": log.logs,
                 "player_id": log.player_id,
+                "next_player_id": log.next_player_id,
             }
 
         self.write(
@@ -138,6 +143,7 @@ class GameCurrentLogsHandler(BaseCorsHandler):
         room_id = data.get("room_id")
         game_id = data.get("game_id")
         player_id = data.get("player_id")
+        next_player_id = data.get("next_player_id")
         timestamp = data.get("timestamp")
         logs = data.get("logs")
 
@@ -150,10 +156,13 @@ class GameCurrentLogsHandler(BaseCorsHandler):
         if player_id is None:
             self.write_error_message(400, u"缺少player_id")
 
+        if next_player_id is None:
+            self.write_error_message(400, u"缺少next_player_id")
+
         if timestamp is None:
             timestamp = int(time.time())
 
-        mongo_api.post_current_logs(timestamp, game_id, room_id, channel, logs, player_id)
+        mongo_api.post_current_logs(timestamp, game_id, room_id, channel, logs, player_id, next_player_id)
 
         self.write({
             "code": 200,
