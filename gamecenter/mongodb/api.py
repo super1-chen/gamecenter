@@ -22,7 +22,7 @@ def init_mongo_connection():
     connect("gamecenter", "gamecenter", host=host)
 
 
-def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs, player_id=1, next_play_id=2):
+def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs, player_id=1, next_player_id=2):
     log = models.GameLogs(
         uid=uid,
         time_stamp=timestamp,
@@ -31,7 +31,7 @@ def post_game_logs(timestamp, game_id, room_id, uid, channel_id, logs, player_id
         logs=logs,
         channel_id=channel_id,
         player_id=player_id,
-        next_play_id=next_play_id
+        next_player_id=next_player_id
     )
     log.save()
 
@@ -50,7 +50,7 @@ def get_game_logs(room_id, start, end):
                 "uid": log.uid,
                 "channel_id": log.channel_id,
                 "player_id": log.player_id,
-                "next_play_id": log.next_play_id,
+                "next_player_id": log.next_player_id,
                 "logs": log.logs
             }
         )
